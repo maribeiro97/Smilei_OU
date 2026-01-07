@@ -96,6 +96,7 @@ public:
         PyTools::extract( "pusher", pusher, "Species", ispec );
         if( mass > 0. ) {
             if( pusher == "boris" // relativistic Boris pusher
+                || pusher == "boris_custom" // custom Boris-based pusher
                 || pusher == "borisnr" // nonrelativistic Boris pusher
                 || pusher == "vay" // J.L. Vay pusher
                 || pusher == "higueracary" // Higuary Cary pusher
@@ -103,7 +104,7 @@ public:
                 || pusher == "borisBTIS3" // relativistic Boris pusher with B-TIS3 interpolation
                 || pusher == "ponderomotive_borisBTIS3" ){
             } else {
-                ERROR_NAMELIST( "For species `" << species_name << "`, pusher must be 'boris', 'borisnr', 'vay', 'higueracary', 'ponderomotive_boris','borisBTIS3', 'ponderomotive_borisBTIS3'",
+                ERROR_NAMELIST( "For species `" << species_name << "`, pusher must be 'boris', 'boris_custom', 'borisnr', 'vay', 'higueracary', 'ponderomotive_boris','borisBTIS3', 'ponderomotive_borisBTIS3'",
                 LINK_NAMELIST + std::string("#pusher") );
             }
             this_species->pusher_name_ = pusher;
