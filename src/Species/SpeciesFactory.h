@@ -132,11 +132,6 @@ public:
             ERROR_NAMELIST( "For species `" << species_name << "`, momentum_cutoff must be >= 0",
             LINK_NAMELIST + std::string("#momentum_cutoff") );
         }
-        PyTools::extract( "momentum_cutoff_min_factor", this_species->momentum_cutoff_min_factor_, "Species", ispec );
-        if( this_species->momentum_cutoff_min_factor_ <= 0.0 || this_species->momentum_cutoff_min_factor_ > 1.0 ) {
-            ERROR_NAMELIST( "For species `" << species_name << "`, momentum_cutoff_min_factor must be in (0, 1]",
-            LINK_NAMELIST + std::string("#momentum_cutoff_min_factor") );
-        }
 
         // Get radiation model
         std::string radiation_model = "none"; // default value
@@ -1041,7 +1036,6 @@ public:
         new_species->pusher_name_                              = species->pusher_name_;
         new_species->external_force_                           = species->external_force_;
         new_species->momentum_cutoff_                          = species->momentum_cutoff_;
-        new_species->momentum_cutoff_min_factor_               = species->momentum_cutoff_min_factor_;
         new_species->radiation_model_                          = species->radiation_model_;
         new_species->radiation_photon_species                  = species->radiation_photon_species;
         new_species->radiation_photon_sampling_                = species->radiation_photon_sampling_;

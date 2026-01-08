@@ -35,7 +35,6 @@ protected:
     bool vecto;
     std::vector<double> external_force_;
     double momentum_cutoff_;
-    double momentum_cutoff_min_factor_;
 };//END class
 
 #endif

@@ -399,7 +399,6 @@ class Species(SmileiComponent):
     pusher = "boris"
     external_force = [0.,0.,0.]
     momentum_cutoff = 0.0
-    momentum_cutoff_min_factor = 2./3.
 
     # Radiation species parameters
     radiation_model = "none"

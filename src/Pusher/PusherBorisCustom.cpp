@@ -111,9 +111,7 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
             const double pcut2 = momentum_cutoff_ * momentum_cutoff_;
             if( p2 > pcut2 ) {
                 const double p = std::sqrt( p2 );
-                const double min_p = momentum_cutoff_min_factor_ * momentum_cutoff_;
-                const double new_p = min_p + ( momentum_cutoff_ - min_p ) * Rand::uniform();
-                const double scale = new_p / p;
+                const double scale = momentum_cutoff_ / p;
                 pxsm *= scale;
                 pysm *= scale;
                 pzsm *= scale;

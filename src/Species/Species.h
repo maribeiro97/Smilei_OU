@@ -146,9 +146,6 @@ public:
     //! Momentum cutoff for artificial cooling (0 disables)
     double momentum_cutoff_;
 
-    //! Minimum reset fraction for momentum cutoff (random in [fraction*cutoff, cutoff])
-    double momentum_cutoff_min_factor_;
-
     //! number-of-particle-per-cell profile
     Profile *particles_per_cell_profile_;
 
