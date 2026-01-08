@@ -33,6 +33,8 @@ protected:
     double dx_inv_[3];
     unsigned int nspace[3];
     bool vecto;
+    std::vector<double> external_force_;
+    double momentum_cutoff_;
 };//END class
 
 #endif

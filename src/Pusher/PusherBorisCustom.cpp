@@ -34,6 +34,10 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
 
     double *const __restrict__ invgf = &( smpi->dynamics_invgf[ithread][0] );
 
+    const double Fx_ext = external_force_[0];
+    const double Fy_ext = external_force_[1];
+    const double Fz_ext = external_force_[2];
+
     const int nparts = particles.last_index.back(); // particles.size()
 
     const double *const __restrict__ Ex = &( ( smpi->dynamics_Epart[ithread] )[0*nparts] );
@@ -85,10 +89,10 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
 
         const double charge_over_mass_dts2 = ( double )( charge[ipart] )*one_over_mass_*dts2;
 
-        // init Half-acceleration in the electric field
-        double pxsm = charge_over_mass_dts2*( Ex[ipart2] );
-        double pysm = charge_over_mass_dts2*( Ey[ipart2] );
-        double pzsm = charge_over_mass_dts2*( Ez[ipart2] );
+        // init Half-acceleration in the electric field and external force (dp/dt)
+        double pxsm = charge_over_mass_dts2*( Ex[ipart2] ) + Fx_ext*dts2;
+        double pysm = charge_over_mass_dts2*( Ey[ipart2] ) + Fy_ext*dts2;
+        double pzsm = charge_over_mass_dts2*( Ez[ipart2] ) + Fz_ext*dts2;
 
         //(*this)(particles, ipart, (*Epart)[ipart], (*Bpart)[ipart] , (*invgf)[ipart]);
         const double umx = momentum_x[ipart] + pxsm;
@@ -105,6 +109,18 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
         pxsm += ( ( 1.0+Tx*Tx-Ty*Ty-Tz*Tz )* umx  +      2.0*( Tx*Ty+Tz )* umy  +      2.0*( Tz*Tx-Ty )* umz )*inv_det_T;
         pysm += ( 2.0*( Tx*Ty-Tz )* umx  + ( 1.0-Tx*Tx+Ty*Ty-Tz*Tz )* umy  +      2.0*( Ty*Tz+Tx )* umz )*inv_det_T;
         pzsm += ( 2.0*( Tz*Tx+Ty )* umx  +      2.0*( Ty*Tz-Tx )* umy  + ( 1.0-Tx*Tx-Ty*Ty+Tz*Tz )* umz )*inv_det_T;
+
+        if( momentum_cutoff_ > 0.0 ) {
+            const double p2 = pxsm*pxsm + pysm*pysm + pzsm*pzsm;
+            const double pcut2 = momentum_cutoff_ * momentum_cutoff_;
+            if( p2 > pcut2 ) {
+                const double p = std::sqrt( p2 );
+                const double scale = momentum_cutoff_ / p;
+                pxsm *= scale;
+                pysm *= scale;
+                pzsm *= scale;
+            }
+        }
 
         // finalize Half-acceleration in the electric field
         local_invgf = 1. / std::sqrt( 1.0 + pxsm*pxsm + pysm*pysm + pzsm*pzsm );

@@ -115,6 +115,24 @@ public:
             MESSAGE( 2, "> Pusher set to norm." );
         }
 
+        if( PyTools::extractV( "external_force", this_species->external_force_, "Species", ispec ) ) {
+            if( this_species->external_force_.size() == 1 ) {
+                this_species->external_force_.resize( 3 );
+                this_species->external_force_[1] = this_species->external_force_[0];
+                this_species->external_force_[2] = this_species->external_force_[0];
+            }
+            if( this_species->external_force_.size() != 3 ) {
+                ERROR_NAMELIST( "For species `" << species_name << "`, external_force should have 3 components",
+                LINK_NAMELIST + std::string("#external_force") );
+            }
+        }
+
+        PyTools::extract( "momentum_cutoff", this_species->momentum_cutoff_, "Species", ispec );
+        if( this_species->momentum_cutoff_ < 0.0 ) {
+            ERROR_NAMELIST( "For species `" << species_name << "`, momentum_cutoff must be >= 0",
+            LINK_NAMELIST + std::string("#momentum_cutoff") );
+        }
+
         // Get radiation model
         std::string radiation_model = "none"; // default value
         PyTools::extract( "radiation_model", radiation_model, "Species", ispec );
@@ -1016,6 +1034,8 @@ public:
         // Copy members
         new_species->name_                                     = species->name_;
         new_species->pusher_name_                              = species->pusher_name_;
+        new_species->external_force_                           = species->external_force_;
+        new_species->momentum_cutoff_                          = species->momentum_cutoff_;
         new_species->radiation_model_                          = species->radiation_model_;
         new_species->radiation_photon_species                  = species->radiation_photon_species;
         new_species->radiation_photon_sampling_                = species->radiation_photon_sampling_;
