@@ -34,6 +34,10 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
 
     double *const __restrict__ invgf = &( smpi->dynamics_invgf[ithread][0] );
 
+    const double Fx_ext = external_force_[0];
+    const double Fy_ext = external_force_[1];
+    const double Fz_ext = external_force_[2];
+
     const int nparts = particles.last_index.back(); // particles.size()
 
     const double *const __restrict__ Ex = &( ( smpi->dynamics_Epart[ithread] )[0*nparts] );
@@ -86,9 +90,9 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
         const double charge_over_mass_dts2 = ( double )( charge[ipart] )*one_over_mass_*dts2;
 
         // init Half-acceleration in the electric field and external force (dp/dt)
-        double pxsm = charge_over_mass_dts2*( Ex[ipart2] ) + external_force_[0]*dts2;
-        double pysm = charge_over_mass_dts2*( Ey[ipart2] ) + external_force_[1]*dts2;
-        double pzsm = charge_over_mass_dts2*( Ez[ipart2] ) + external_force_[2]*dts2;
+        double pxsm = charge_over_mass_dts2*( Ex[ipart2] ) + Fx_ext*dts2;
+        double pysm = charge_over_mass_dts2*( Ey[ipart2] ) + Fy_ext*dts2;
+        double pzsm = charge_over_mass_dts2*( Ez[ipart2] ) + Fz_ext*dts2;
 
         //(*this)(particles, ipart, (*Epart)[ipart], (*Bpart)[ipart] , (*invgf)[ipart]);
         const double umx = momentum_x[ipart] + pxsm;
