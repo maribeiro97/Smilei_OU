@@ -140,6 +140,15 @@ public:
     //! vector of temperature profiles (Tx, Ty, Tz)
     std::vector<Profile *> temperature_profile_;
 
+    //! External force applied directly in the pusher (dp/dt term)
+    std::vector<double> external_force_;
+
+    //! Momentum cutoff for artificial cooling (0 disables)
+    double momentum_cutoff_;
+
+    //! Minimum reset fraction for momentum cutoff (random in [fraction*cutoff, cutoff])
+    double momentum_cutoff_min_factor_;
+
     //! number-of-particle-per-cell profile
     Profile *particles_per_cell_profile_;
 

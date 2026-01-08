@@ -25,7 +25,10 @@ Pusher::Pusher( Params &params, Species *species ) :
     dts4           = params.timestep/4.;
     
     nDim_          = params.nDim_particle;
-    
+    external_force_ = species->external_force_;
+    momentum_cutoff_ = species->momentum_cutoff_;
+    momentum_cutoff_min_factor_ = species->momentum_cutoff_min_factor_;
+
 }
 
 Pusher::~Pusher()

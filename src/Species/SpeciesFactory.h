@@ -96,6 +96,7 @@ public:
         PyTools::extract( "pusher", pusher, "Species", ispec );
         if( mass > 0. ) {
             if( pusher == "boris" // relativistic Boris pusher
+                || pusher == "boris_custom" // custom Boris-based pusher
                 || pusher == "borisnr" // nonrelativistic Boris pusher
                 || pusher == "vay" // J.L. Vay pusher
                 || pusher == "higueracary" // Higuary Cary pusher
@@ -103,7 +104,7 @@ public:
                 || pusher == "borisBTIS3" // relativistic Boris pusher with B-TIS3 interpolation
                 || pusher == "ponderomotive_borisBTIS3" ){
             } else {
-                ERROR_NAMELIST( "For species `" << species_name << "`, pusher must be 'boris', 'borisnr', 'vay', 'higueracary', 'ponderomotive_boris','borisBTIS3', 'ponderomotive_borisBTIS3'",
+                ERROR_NAMELIST( "For species `" << species_name << "`, pusher must be 'boris', 'boris_custom', 'borisnr', 'vay', 'higueracary', 'ponderomotive_boris','borisBTIS3', 'ponderomotive_borisBTIS3'",
                 LINK_NAMELIST + std::string("#pusher") );
             }
             this_species->pusher_name_ = pusher;
@@ -112,6 +113,29 @@ public:
             this_species-> pusher_name_ = "norm";
             MESSAGE( 2, "> " <<species_name <<" is a photon species (mass==0)." );
             MESSAGE( 2, "> Pusher set to norm." );
+        }
+
+        if( PyTools::extractV( "external_force", this_species->external_force_, "Species", ispec ) ) {
+            if( this_species->external_force_.size() == 1 ) {
+                this_species->external_force_.resize( 3 );
+                this_species->external_force_[1] = this_species->external_force_[0];
+                this_species->external_force_[2] = this_species->external_force_[0];
+            }
+            if( this_species->external_force_.size() != 3 ) {
+                ERROR_NAMELIST( "For species `" << species_name << "`, external_force should have 3 components",
+                LINK_NAMELIST + std::string("#external_force") );
+            }
+        }
+
+        PyTools::extract( "momentum_cutoff", this_species->momentum_cutoff_, "Species", ispec );
+        if( this_species->momentum_cutoff_ < 0.0 ) {
+            ERROR_NAMELIST( "For species `" << species_name << "`, momentum_cutoff must be >= 0",
+            LINK_NAMELIST + std::string("#momentum_cutoff") );
+        }
+        PyTools::extract( "momentum_cutoff_min_factor", this_species->momentum_cutoff_min_factor_, "Species", ispec );
+        if( this_species->momentum_cutoff_min_factor_ <= 0.0 || this_species->momentum_cutoff_min_factor_ > 1.0 ) {
+            ERROR_NAMELIST( "For species `" << species_name << "`, momentum_cutoff_min_factor must be in (0, 1]",
+            LINK_NAMELIST + std::string("#momentum_cutoff_min_factor") );
         }
 
         // Get radiation model
@@ -1015,6 +1039,9 @@ public:
         // Copy members
         new_species->name_                                     = species->name_;
         new_species->pusher_name_                              = species->pusher_name_;
+        new_species->external_force_                           = species->external_force_;
+        new_species->momentum_cutoff_                          = species->momentum_cutoff_;
+        new_species->momentum_cutoff_min_factor_               = species->momentum_cutoff_min_factor_;
         new_species->radiation_model_                          = species->radiation_model_;
         new_species->radiation_photon_species                  = species->radiation_photon_species;
         new_species->radiation_photon_sampling_                = species->radiation_photon_sampling_;

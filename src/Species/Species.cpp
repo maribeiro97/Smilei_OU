@@ -114,6 +114,10 @@ Species::Species( Params &params, Patch *patch ) :
 
     merge_min_momentum_cell_length_.resize(3);
 
+    external_force_.assign( 3, 0.0 );
+    momentum_cutoff_ = 0.0;
+    momentum_cutoff_min_factor_ = 2.0/3.0;
+
     mBW_pair_species_index_[0] = -1;
     mBW_pair_species_index_[1] = -1;
 
