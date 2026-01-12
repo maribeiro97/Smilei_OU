@@ -168,6 +168,15 @@ public:
     //! z-component of the electric field
     Field *Ez_;
 
+    //! x-component of the acceleration field
+    Field *Ax_;
+
+    //! y-component of the acceleration field
+    Field *Ay_;
+
+    //! z-component of the acceleration field
+    Field *Az_;
+
     //! x-component of the magnetic field
     Field *Bx_;
 

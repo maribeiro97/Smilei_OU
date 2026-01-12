@@ -93,6 +93,9 @@ void ElectroMagn2D::initElectroMagn2DQuantities( Params &params, Patch *patch )
     Ex_  = FieldFactory::create2D( dimPrim, 0, false, "Ex", params );
     Ey_  = FieldFactory::create2D( dimPrim, 1, false, "Ey", params );
     Ez_  = FieldFactory::create2D( dimPrim, 2, false, "Ez", params );
+    Ax_  = FieldFactory::create2D( dimPrim, 0, false, "Ax", params );
+    Ay_  = FieldFactory::create2D( dimPrim, 1, false, "Ay", params );
+    Az_  = FieldFactory::create2D( dimPrim, 2, false, "Az", params );
     Bx_  = FieldFactory::create2D( dimPrim, 0, true,  "Bx", params );
     By_  = FieldFactory::create2D( dimPrim, 1, true,  "By", params );
     Bz_  = FieldFactory::create2D( dimPrim, 2, true,  "Bz", params );
@@ -1684,6 +1687,5 @@ void ElectroMagn2D::copyInLocalSusceptibility(int ispec, int ibin,
     }
   
 } // end ElectroMagn2D::copyInLocalSusceptibility
-
 
 

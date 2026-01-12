@@ -4777,6 +4777,21 @@ void VectorPatch::dynamicsWithoutTasks( Params &params,
     #pragma omp for schedule(runtime)
         for( unsigned int ipatch=0 ; ipatch<this->size() ; ipatch++ ) {
             ( *this )( ipatch )->EMfields->restartRhoJ();
+            if( ( *this )( ipatch )->EMfields->Ax_ ) {
+                Field *Ax_field = ( *this )( ipatch )->EMfields->Ax_;
+                Field *Ay_field = ( *this )( ipatch )->EMfields->Ay_;
+                Field *Az_field = ( *this )( ipatch )->EMfields->Az_;
+                const double A0 = 1.0;
+                const unsigned int field_size = Ax_field->size();
+                double *Ax_data = Ax_field->data();
+                double *Ay_data = Ay_field->data();
+                double *Az_data = Az_field->data();
+                for( unsigned int idx = 0; idx < field_size; ++idx ) {
+                    Ax_data[idx] = A0;
+                    Ay_data[idx] = 0.0;
+                    Az_data[idx] = 0.0;
+                }
+            }
             for( unsigned int ispec=0 ; ispec<( *this )( ipatch )->vecSpecies.size() ; ispec++ ) {
                 Species *spec = species( ipatch, ispec );
 

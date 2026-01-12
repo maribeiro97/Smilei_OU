@@ -104,6 +104,9 @@ void ElectroMagn::initElectroMagnQuantities()
     Ex_=NULL;
     Ey_=NULL;
     Ez_=NULL;
+    Ax_=NULL;
+    Ay_=NULL;
+    Az_=NULL;
     Bx_=NULL;
     By_=NULL;
     Bz_=NULL;
@@ -205,6 +208,15 @@ ElectroMagn::~ElectroMagn()
     }
     if( Ez_ != NULL ) {
         delete Ez_;
+    }
+    if( Ax_ != NULL ) {
+        delete Ax_;
+    }
+    if( Ay_ != NULL ) {
+        delete Ay_;
+    }
+    if( Az_ != NULL ) {
+        delete Az_;
     }
     if( Bx_ != NULL ) {
         delete Bx_;

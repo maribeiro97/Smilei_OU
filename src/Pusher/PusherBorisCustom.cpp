@@ -43,6 +43,9 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
     const double *const __restrict__ Ex = &( ( smpi->dynamics_Epart[ithread] )[0*nparts] );
     const double *const __restrict__ Ey = &( ( smpi->dynamics_Epart[ithread] )[1*nparts] );
     const double *const __restrict__ Ez = &( ( smpi->dynamics_Epart[ithread] )[2*nparts] );
+    const double *const __restrict__ Ax = &( ( smpi->dynamics_Apart[ithread] )[0*nparts] );
+    const double *const __restrict__ Ay = &( ( smpi->dynamics_Apart[ithread] )[1*nparts] );
+    const double *const __restrict__ Az = &( ( smpi->dynamics_Apart[ithread] )[2*nparts] );
     const double *const __restrict__ Bx = &( ( smpi->dynamics_Bpart[ithread] )[0*nparts] );
     const double *const __restrict__ By = &( ( smpi->dynamics_Bpart[ithread] )[1*nparts] );
     const double *const __restrict__ Bz = &( ( smpi->dynamics_Bpart[ithread] )[2*nparts] );
@@ -68,6 +71,9 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
     #pragma acc parallel present(Ex [0:nparts],    \
                                  Ey [0:nparts],    \
                                  Ez [0:nparts],    \
+                                 Ax [0:nparts],    \
+                                 Ay [0:nparts],    \
+                                 Az [0:nparts],    \
                                  Bx [0:nparts],    \
                                  By [0:nparts],    \
                                  Bz [0:nparts],    \
@@ -90,9 +96,9 @@ void PusherBorisCustom::operator()( Particles &particles, SmileiMPI *smpi, int i
         const double charge_over_mass_dts2 = ( double )( charge[ipart] )*one_over_mass_*dts2;
 
         // init Half-acceleration in the electric field and external force (dp/dt)
-        double pxsm = charge_over_mass_dts2*( Ex[ipart2] ) + Fx_ext*dts2;
-        double pysm = charge_over_mass_dts2*( Ey[ipart2] ) + Fy_ext*dts2;
-        double pzsm = charge_over_mass_dts2*( Ez[ipart2] ) + Fz_ext*dts2;
+        double pxsm = charge_over_mass_dts2*( Ex[ipart2] ) + Fx_ext*dts2 + mass_*Ax[ipart2]*dts2;
+        double pysm = charge_over_mass_dts2*( Ey[ipart2] ) + Fy_ext*dts2 + mass_*Ay[ipart2]*dts2;
+        double pzsm = charge_over_mass_dts2*( Ez[ipart2] ) + Fz_ext*dts2 + mass_*Az[ipart2]*dts2;
 
         //(*this)(particles, ipart, (*Epart)[ipart], (*Bpart)[ipart] , (*invgf)[ipart]);
         const double umx = momentum_x[ipart] + pxsm;
