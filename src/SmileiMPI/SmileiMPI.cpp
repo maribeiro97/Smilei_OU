@@ -154,6 +154,7 @@ void SmileiMPI::init( Params &params, DomainDecomposition *domain_decomposition 
 #ifdef _OPENMP
     dynamics_Epart.resize( omp_get_max_threads() );
     dynamics_Bpart.resize( omp_get_max_threads() );
+    dynamics_Apart.resize( omp_get_max_threads() );
     dynamics_invgf.resize( omp_get_max_threads() );
     dynamics_iold.resize( omp_get_max_threads() );
     dynamics_deltaold.resize( omp_get_max_threads() );
@@ -182,6 +183,7 @@ void SmileiMPI::init( Params &params, DomainDecomposition *domain_decomposition 
 #else
     dynamics_Epart.resize( 1 );
     dynamics_Bpart.resize( 1 );
+    dynamics_Apart.resize( 1 );
     dynamics_invgf.resize( 1 );
     dynamics_iold.resize( 1 );
     dynamics_deltaold.resize( 1 );
@@ -2485,6 +2487,8 @@ void SmileiMPI::eraseBufferParticleTrail( const int ndim, const int istart, cons
                                       dynamics_Epart[ithread].begin()+idim*np + np);
         dynamics_Bpart[ithread].erase(dynamics_Bpart[ithread].begin()+idim*np + istart,
                                       dynamics_Bpart[ithread].begin()+idim*np + np);
+        dynamics_Apart[ithread].erase(dynamics_Apart[ithread].begin()+idim*np + istart,
+                                      dynamics_Apart[ithread].begin()+idim*np + np);
     }
     dynamics_invgf[ithread].erase(dynamics_invgf[ithread].begin() + istart,
                                   dynamics_invgf[ithread].begin() + np);
@@ -2581,6 +2585,7 @@ void SmileiMPI::resizeDeviceBuffers( unsigned int ithread,
 
         TryFreeDeviceCapacity( dynamics_Epart[ithread] );
         TryFreeDeviceCapacity( dynamics_Bpart[ithread] );
+        TryFreeDeviceCapacity( dynamics_Apart[ithread] );
         TryFreeDeviceCapacity( dynamics_invgf[ithread] );
         TryFreeDeviceCapacity( dynamics_iold[ithread] );
         TryFreeDeviceCapacity( dynamics_deltaold[ithread] );
@@ -2589,6 +2594,7 @@ void SmileiMPI::resizeDeviceBuffers( unsigned int ithread,
 
         dynamics_Epart[ithread].reserve( new_particle_capacity * 3 );
         dynamics_Bpart[ithread].reserve( new_particle_capacity * 3 );
+        dynamics_Apart[ithread].reserve( new_particle_capacity * 3 );
         dynamics_invgf[ithread].reserve( new_particle_capacity * 1 );
         dynamics_iold[ithread].reserve( new_particle_capacity * ndim_field );
         dynamics_deltaold[ithread].reserve( new_particle_capacity * ndim_field );
@@ -2600,6 +2606,7 @@ void SmileiMPI::resizeDeviceBuffers( unsigned int ithread,
 
         dynamics_Epart[ithread].resize( particle_count * 3 );
         dynamics_Bpart[ithread].resize( particle_count * 3 );
+        dynamics_Apart[ithread].resize( particle_count * 3 );
         dynamics_invgf[ithread].resize( particle_count * 1 );
         dynamics_iold[ithread].resize( particle_count * ndim_field );
         dynamics_deltaold[ithread].resize( particle_count * ndim_field );
@@ -2615,6 +2622,7 @@ void SmileiMPI::resizeDeviceBuffers( unsigned int ithread,
     if( particle_count > kCurrentParticleCapacity ) {
         smilei::tools::gpu::HostDeviceMemoryManagement::DeviceAllocate( dynamics_Epart[ithread].data(), dynamics_Epart[ithread].capacity() );
         smilei::tools::gpu::HostDeviceMemoryManagement::DeviceAllocate( dynamics_Bpart[ithread].data(), dynamics_Bpart[ithread].capacity() );
+        smilei::tools::gpu::HostDeviceMemoryManagement::DeviceAllocate( dynamics_Apart[ithread].data(), dynamics_Apart[ithread].capacity() );
         smilei::tools::gpu::HostDeviceMemoryManagement::DeviceAllocate( dynamics_invgf[ithread].data(), dynamics_invgf[ithread].capacity() );
         smilei::tools::gpu::HostDeviceMemoryManagement::DeviceAllocate( dynamics_iold[ithread].data(), dynamics_iold[ithread].capacity() );
         smilei::tools::gpu::HostDeviceMemoryManagement::DeviceAllocate( dynamics_deltaold[ithread].data(), dynamics_deltaold[ithread].capacity() );
@@ -2625,6 +2633,7 @@ void SmileiMPI::resizeDeviceBuffers( unsigned int ithread,
 
     SMILEI_GPU_ASSERT_MEMORY_IS_ON_DEVICE( dynamics_Epart[ithread].data() );
     SMILEI_GPU_ASSERT_MEMORY_IS_ON_DEVICE( dynamics_Bpart[ithread].data() );
+    SMILEI_GPU_ASSERT_MEMORY_IS_ON_DEVICE( dynamics_Apart[ithread].data() );
     SMILEI_GPU_ASSERT_MEMORY_IS_ON_DEVICE( dynamics_invgf[ithread].data() );
     SMILEI_GPU_ASSERT_MEMORY_IS_ON_DEVICE( dynamics_iold[ithread].data() );
     SMILEI_GPU_ASSERT_MEMORY_IS_ON_DEVICE( dynamics_deltaold[ithread].data() );

@@ -213,6 +213,8 @@ public:
     std::vector<std::vector<double>> dynamics_Epart;
     //! value of the Bfield
     std::vector<std::vector<double>> dynamics_Bpart;
+    //! value of the acceleration field
+    std::vector<std::vector<double>> dynamics_Apart;
     //! gamma factor
     std::vector<std::vector<double>> dynamics_invgf;
     //! iold_pos
@@ -273,6 +275,7 @@ public:
     {
         dynamics_Epart[ithread].resize( 3*npart );
         dynamics_Bpart[ithread].resize( 3*npart );
+        dynamics_Apart[ithread].resize( 3*npart );
         dynamics_invgf[ithread].resize( npart );
         dynamics_iold[ithread].resize( ndim_field*npart );
         dynamics_deltaold[ithread].resize( ndim_field*npart );
@@ -303,6 +306,7 @@ public:
     {
         dynamics_Epart.resize( n_buffers );
         dynamics_Bpart.resize( n_buffers );
+        dynamics_Apart.resize( n_buffers );
         dynamics_invgf.resize( n_buffers );
         dynamics_iold.resize( n_buffers );
         dynamics_deltaold.resize( n_buffers );

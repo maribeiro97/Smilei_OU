@@ -11,6 +11,7 @@
 
 #include "Pusher.h"
 #include "PusherBoris.h"
+#include "PusherBorisCustom.h"
 #include "PusherBorisBTIS3.h"
 #include "PusherPonderomotiveBoris.h"
 #include "PusherPonderomotivePositionBoris.h"
@@ -48,6 +49,8 @@ public:
             // Pusher of Boris
             if( species->pusher_name_ == "boris" ) {
                     Push = new PusherBoris( params, species );
+            } else if( species->pusher_name_ == "boris_custom" ) {
+                    Push = new PusherBorisCustom( params, species );
             } else if( species->pusher_name_ == "ponderomotive_boris" ) {
             
                 int n_envlaser = params.Laser_Envelope_model;

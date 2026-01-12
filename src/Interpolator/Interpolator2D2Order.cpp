@@ -166,6 +166,7 @@ void Interpolator2D2Order::fieldsWrapper(   ElectroMagn *EMfields,
 {
     double *const __restrict__ ELoc  = smpi->dynamics_Epart[ithread].data();
     double *const __restrict__ BLoc  = smpi->dynamics_Bpart[ithread].data();
+    double *const __restrict__ ALoc  = smpi->dynamics_Apart[ithread].data();
 
     int    *const __restrict__ iold  = smpi->dynamics_iold[ithread].data();
     double *const __restrict__ delta = smpi->dynamics_deltaold[ithread].data();
@@ -176,6 +177,9 @@ void Interpolator2D2Order::fieldsWrapper(   ElectroMagn *EMfields,
     const double *const __restrict__ Ex2D = static_cast<Field2D *>( EMfields->Ex_ )->data();
     const double *const __restrict__ Ey2D = static_cast<Field2D *>( EMfields->Ey_ )->data();
     const double *const __restrict__ Ez2D = static_cast<Field2D *>( EMfields->Ez_ )->data();
+    const double *const __restrict__ Ax2D = static_cast<Field2D *>( EMfields->Ax_ )->data();
+    const double *const __restrict__ Ay2D = static_cast<Field2D *>( EMfields->Ay_ )->data();
+    const double *const __restrict__ Az2D = static_cast<Field2D *>( EMfields->Az_ )->data();
     const double *const __restrict__ Bx2D = static_cast<Field2D *>( EMfields->Bx_m )->data();
     const double *const __restrict__ By2D = static_cast<Field2D *>( EMfields->By_m )->data();
     const double *const __restrict__ Bz2D = static_cast<Field2D *>( EMfields->Bz_m )->data();
@@ -184,6 +188,9 @@ void Interpolator2D2Order::fieldsWrapper(   ElectroMagn *EMfields,
     const int sizeofEx = EMfields->Ex_->size();
     const int sizeofEy = EMfields->Ey_->size();
     const int sizeofEz = EMfields->Ez_->size();
+    const int sizeofAx = EMfields->Ax_->size();
+    const int sizeofAy = EMfields->Ay_->size();
+    const int sizeofAz = EMfields->Az_->size();
     const int sizeofBx = EMfields->Bx_m->size();
     const int sizeofBy = EMfields->By_m->size();
     const int sizeofBz = EMfields->Bz_m->size();
@@ -213,11 +220,15 @@ void Interpolator2D2Order::fieldsWrapper(   ElectroMagn *EMfields,
     size_t interpolation_range_size = ( last_index + 1 * nparts ) - first_index;
     #pragma acc parallel present(ELoc [first_index:interpolation_range_size],\
                                  BLoc [first_index:interpolation_range_size],\
+                                 ALoc [first_index:interpolation_range_size],\
                                  iold [first_index:interpolation_range_size],\
                                  delta [first_index:interpolation_range_size],\
                                  Ex2D [0:sizeofEx],\
                                  Ey2D [0:sizeofEy],\
                                  Ez2D [0:sizeofEz],\
+                                 Ax2D [0:sizeofAx],\
+                                 Ay2D [0:sizeofAy],\
+                                 Az2D [0:sizeofAz],\
                                  Bx2D [0:sizeofBx],\
                                  By2D [0:sizeofBy],\
                                  Bz2D [0:sizeofBz])\
@@ -246,6 +257,12 @@ void Interpolator2D2Order::fieldsWrapper(   ElectroMagn *EMfields,
         ELoc[1*nparts+ipart] = compute( &coeffxp[1], &coeffyd[1], Ey2D, idx_p[0], idx_d[1], ny_d );
         // Interpolation of Ez^(p,p)
         ELoc[2*nparts+ipart] = compute( &coeffxp[1], &coeffyp[1], Ez2D, idx_p[0], idx_p[1], ny_p );
+        // Interpolation of Ax^(d,p)
+        ALoc[0*nparts+ipart] = compute( &coeffxd[1], &coeffyp[1], Ax2D, idx_d[0], idx_p[1], ny_p );
+        // Interpolation of Ay^(p,d)
+        ALoc[1*nparts+ipart] = compute( &coeffxp[1], &coeffyd[1], Ay2D, idx_p[0], idx_d[1], ny_d );
+        // Interpolation of Az^(p,p)
+        ALoc[2*nparts+ipart] = compute( &coeffxp[1], &coeffyp[1], Az2D, idx_p[0], idx_p[1], ny_p );
         // Interpolation of Bx^(p,d)
         BLoc[0*nparts+ipart] = compute( &coeffxp[1], &coeffyd[1], Bx2D, idx_p[0], idx_d[1], ny_d );
         // Interpolation of By^(d,p)
@@ -282,6 +299,7 @@ void Interpolator2D2Order::fieldsWrapper(   ElectroMagn *EMfields,
     size_t interpolation_range_size = ( last_index + 1 * nparts ) - first_index;
     #pragma acc parallel present(ELoc [first_index:interpolation_range_size],\
                                  BLoc [first_index:interpolation_range_size],\
+                                 ALoc [first_index:interpolation_range_size],\
                                  BypartBTIS3 [first_index:interpolation_range_size],\
                                  BzpartBTIS3 [first_index:interpolation_range_size],\
                                  iold [first_index:interpolation_range_size],\
@@ -289,6 +307,9 @@ void Interpolator2D2Order::fieldsWrapper(   ElectroMagn *EMfields,
                                  Ex2D [0:sizeofEx],\
                                  Ey2D [0:sizeofEy],\
                                  Ez2D [0:sizeofEz],\
+                                 Ax2D [0:sizeofAx],\
+                                 Ay2D [0:sizeofAy],\
+                                 Az2D [0:sizeofAz],\
                                  Bx2D [0:sizeofBx],\
                                  By2D [0:sizeofBy],\
                                  Bz2D [0:sizeofBz],\
@@ -319,6 +340,12 @@ void Interpolator2D2Order::fieldsWrapper(   ElectroMagn *EMfields,
             ELoc[1*nparts+ipart]          = compute( &coeffxp[1], &coeffyd[1], Ey2D, idx_p[0], idx_d[1], ny_d );
             // Interpolation of Ez^(p,p)
             ELoc[2*nparts+ipart]          = compute( &coeffxp[1], &coeffyp[1], Ez2D, idx_p[0], idx_p[1], ny_p );
+            // Interpolation of Ax^(d,p)
+            ALoc[0*nparts+ipart]          = compute( &coeffxd[1], &coeffyp[1], Ax2D, idx_d[0], idx_p[1], ny_p );
+            // Interpolation of Ay^(p,d)
+            ALoc[1*nparts+ipart]          = compute( &coeffxp[1], &coeffyd[1], Ay2D, idx_p[0], idx_d[1], ny_d );
+            // Interpolation of Az^(p,p)
+            ALoc[2*nparts+ipart]          = compute( &coeffxp[1], &coeffyp[1], Az2D, idx_p[0], idx_p[1], ny_p );
             // Interpolation of Bx^(p,d)
             BLoc[0*nparts+ipart]          = compute( &coeffxp[1], &coeffyd[1], Bx2D, idx_p[0], idx_d[1], ny_d );
             // Interpolation of By^(d,p)
